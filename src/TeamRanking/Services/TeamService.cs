@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamRanking.Interfaces;
+using System.Text.Json;
 using TeamRanking.Persistence;
 using TeamRanking.Persistence.Entity;
+using TeamRanking.Services.Interfaces;
 using TeamRanking.Services.Models;
 
 namespace TeamRanking.Services
@@ -84,13 +85,50 @@ namespace TeamRanking.Services
             };
         }
 
-        public async Task DeleteTeamAsync(int id)
+        public async Task DeleteTeamAsync(int teamId)
         {
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams.FindAsync(teamId);
             if (team != null)
             {
+                await _rankingService.DeleteRankingByTeamIdAsync(teamId);
                 team.IsDeleted = true;
                 await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task BulkCreateTeamsFromFileAsync(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("The JSON file was not found.", filePath);
+            }
+
+            var jsonData = await File.ReadAllTextAsync(filePath);
+            var createUpdateTeamDtos = JsonSerializer.Deserialize<List<CreateUpdateTeamDto>>(jsonData);
+
+            if (createUpdateTeamDtos == null || createUpdateTeamDtos.Count == 0)
+            {
+                throw new InvalidDataException("Invalid team data.");
+            }
+
+            var existingTeams = await _context.Teams
+                                              .Where(t => createUpdateTeamDtos.Select(dto => dto.Name).Contains(t.TeamName))
+                                              .ToListAsync();
+
+            var newTeams = createUpdateTeamDtos
+                .Where(dto => !existingTeams.Any(et => et.TeamName == dto.Name))
+                .Select(dto => new Team
+                {
+                    TeamName = dto.Name,
+                    IsDeleted = false
+                }).ToList();
+
+            _context.Teams.AddRange(newTeams);
+            await _context.SaveChangesAsync();
+
+            foreach (var team in newTeams)
+            {
+                await _rankingService.InitializeRankingForTeamAsync(team.TeamId);
             }
         }
     }

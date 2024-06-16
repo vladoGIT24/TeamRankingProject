@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TeamRanking.Interfaces;
 using TeamRanking.Persistence.Entity;
+using TeamRanking.Services.Interfaces;
 using TeamRanking.Services.Models;
 
 namespace TeamRanking.Controllers
@@ -20,6 +20,7 @@ namespace TeamRanking.Controllers
         public async Task<ActionResult<IEnumerable<RankingDto>>> GetRankings()
         {
             var rankings = await _rankingService.GetAllRankingsAsync();
+
             return Ok(rankings);
         }
 
@@ -29,7 +30,7 @@ namespace TeamRanking.Controllers
             var ranking = await _rankingService.GetRankingByTeamIdAsync(teamId);
             if (ranking == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Ranking not found for team", TeamId = teamId });
             }
             return Ok(ranking);
         }

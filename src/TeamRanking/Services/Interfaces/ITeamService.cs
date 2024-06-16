@@ -1,7 +1,7 @@
 ﻿using TeamRanking.Persistence.Entity;
 using TeamRanking.Services.Models;
 
-namespace TeamRanking.Interfaces
+namespace TeamRanking.Services.Interfaces
 {
     public interface ITeamService
     {
@@ -10,5 +10,6 @@ namespace TeamRanking.Interfaces
         Task<TeamDto> CreateTeamAsync(CreateUpdateTeamDto createUpdateTeamDto);
         Task<TeamDto> UpdateTeamAsync(int id, CreateUpdateTeamDto createUpdateTeamDto);
         Task DeleteTeamAsync(int id);
+        Task BulkCreateTeamsFromFileAsync(string filePath);
     }
 }

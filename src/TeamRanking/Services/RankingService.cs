@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamRanking.Interfaces;
 using TeamRanking.Persistence;
 using TeamRanking.Persistence.Entity;
+using TeamRanking.Services.Interfaces;
 using TeamRanking.Services.Models;
 
 namespace TeamRanking.Services
@@ -100,6 +100,16 @@ namespace TeamRanking.Services
 
             _context.Ranking.Add(ranking);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteRankingByTeamIdAsync(int teamId)
+        {
+            var ranking = await _context.Ranking.FirstOrDefaultAsync(r => r.TeamId == teamId);
+            if (ranking != null)
+            {
+                _context.Ranking.Remove(ranking);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

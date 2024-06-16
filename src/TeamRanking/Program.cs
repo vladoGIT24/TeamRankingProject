@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using TeamRanking.Interfaces;
 using TeamRanking.Middleware;
 using TeamRanking.Persistence;
 using TeamRanking.Services;
+using TeamRanking.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

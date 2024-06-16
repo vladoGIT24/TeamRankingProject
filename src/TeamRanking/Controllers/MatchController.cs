@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TeamRanking.Interfaces;
 using TeamRanking.Persistence.Entity;
+using TeamRanking.Services.Interfaces;
 using TeamRanking.Services.Models;
 
 namespace TeamRanking.Controllers
@@ -29,7 +29,7 @@ namespace TeamRanking.Controllers
             var match = await _matchService.GetMatchByIdAsync(id);
             if (match == null)
             {
-                return NotFound();
+                return Ok(new { Message = "Match updated successfully", Data = match });
             }
             return Ok(match);
         }
@@ -47,9 +47,9 @@ namespace TeamRanking.Controllers
             var match = await _matchService.UpdateMatchAsync(id, updateMatchDto);
             if (match == null)
             {
-                return NotFound();
+                return Ok(new { Message = "Match updated successfully", Data = match });
             }
-            return NoContent();
+            return Ok(new{ Message ="Match updated successfully", Data = match });
         }
 
         [HttpDelete("{id}")]
@@ -58,10 +58,10 @@ namespace TeamRanking.Controllers
             var match = await _matchService.GetMatchByIdAsync(id);
             if (match == null)
             {
-                return NotFound();
+                return Ok(new { Message = "Match updated successfully", Data = match });
             }
             await _matchService.DeleteMatchAsync(id);
-            return NoContent();
+            return Ok(new { Message = "Match deleted successfully", MatchId = id });
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TeamRanking.Interfaces;
+using TeamRanking.Services.Interfaces;
 using TeamRanking.Services.Models;
 
 namespace TeamRanking.Controllers
@@ -9,10 +9,12 @@ namespace TeamRanking.Controllers
     public class TeamsController : ControllerBase
     {
         private readonly ITeamService _teamService;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public TeamsController(ITeamService teamService)
+        public TeamsController(ITeamService teamService, IWebHostEnvironment hostingEnvironment)
         {
             _teamService = teamService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
@@ -46,9 +48,9 @@ namespace TeamRanking.Controllers
             var team = await _teamService.UpdateTeamAsync(id, createUpdateTeamDto);
             if (team == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Team not found", TeamId = id });
             }
-            return Ok();
+            return Ok(new { Message = "Team updated successfully", Data = team });
         }
 
         [HttpDelete("{id}")]
@@ -57,10 +59,31 @@ namespace TeamRanking.Controllers
             var team = await _teamService.GetTeamByIdAsync(id);
             if (team == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Team not found", TeamId = id });
             }
             await _teamService.DeleteTeamAsync(id);
-            return Ok();
+            return Ok(new { Message = "Team deleted successfully", TeamId = id });
+        }
+
+        [HttpPost("import-teams-from-file")]
+        public async Task<IActionResult> BulkCreateTeamsFromFile()
+        {
+            var filePath = Path.Combine(_hostingEnvironment.ContentRootPath, "Persistence", "teams.json");
+
+            try
+            {
+                await _teamService.BulkCreateTeamsFromFileAsync(filePath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message, FilePath = ex.FileName });
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+
+            return Ok(new { Message = "Teams created successfully." });
         }
     }
 }
