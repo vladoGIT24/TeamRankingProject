@@ -17,7 +17,7 @@ POST /api/teams: Create a new team.\
 PUT /api/teams/{id}: Update an existing team.\
 DELETE /api/teams/{id}: Delete a team.
 ### Bulk Import
-POST /api/teams/import-teams-from-file: Import teams from a JSON file.
+POST /api/teams/import: Import teams from a JSON file.
 ### Matches
 GET /api/matches: Retrieve all matches.\
 GET /api/matches/{id}: Retrieve a specific match by ID.\
