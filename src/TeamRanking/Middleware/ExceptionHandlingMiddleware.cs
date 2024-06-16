@@ -27,6 +27,18 @@ namespace TeamRanking.Middleware
             {
                 await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest, "Validation error");
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.Unauthorized, "Unauthorized access");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.NotFound, "Resource not found");
+            }
+            catch (InvalidOperationException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.Conflict, "Invalid operation");
+            }
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Internal server error");

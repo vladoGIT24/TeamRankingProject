@@ -65,7 +65,7 @@ namespace TeamRanking.Controllers
             return Ok(new { Message = "Team deleted successfully", TeamId = id });
         }
 
-        [HttpPost("import-teams-from-file")]
+        [HttpPost("import")]
         public async Task<IActionResult> BulkCreateTeamsFromFile()
         {
             var filePath = Path.Combine(_hostingEnvironment.ContentRootPath, "Persistence", "teams.json");

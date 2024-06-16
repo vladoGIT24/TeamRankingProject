@@ -48,6 +48,12 @@ namespace TeamRanking.Services
 
         public async Task<TeamDto> CreateTeamAsync(CreateUpdateTeamDto createUpdateTeamDto)
         {
+            // Check if the team name already exists
+            if (await _context.Teams.AnyAsync(t => t.TeamName == createUpdateTeamDto.Name && !t.IsDeleted))
+            {
+                throw new InvalidOperationException($"The team name '{createUpdateTeamDto.Name}' already exists.");
+            }
+
             var team = new Team
             {
                 TeamName = createUpdateTeamDto.Name,
@@ -72,6 +78,12 @@ namespace TeamRanking.Services
             if (team == null || team.IsDeleted)
             {
                 return null;
+            }
+
+            // Check if the new team name already exists
+            if (await _context.Teams.AnyAsync(t => t.TeamName == createUpdateTeamDto.Name && t.TeamId != id && !t.IsDeleted))
+            {
+                throw new InvalidOperationException($"The team name '{createUpdateTeamDto.Name}' already exists.");
             }
 
             team.TeamName = createUpdateTeamDto.Name;

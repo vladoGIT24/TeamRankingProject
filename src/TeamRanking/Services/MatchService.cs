@@ -54,6 +54,19 @@ namespace TeamRanking.Services
 
         public async Task<MatchDto> CreateMatchAsync(CreateMatchDto createMatchDto)
         {
+
+            var homeTeamExists = await _context.Teams.AnyAsync(t => t.TeamId == createMatchDto.HomeTeamId && !t.IsDeleted);
+            if (!homeTeamExists)
+            {
+                throw new InvalidOperationException($"Home team with ID {createMatchDto.HomeTeamId} does not exist.");
+            }
+
+            var awayTeamExists = await _context.Teams.AnyAsync(t => t.TeamId == createMatchDto.AwayTeamId && !t.IsDeleted);
+            if (!awayTeamExists)
+            {
+                throw new InvalidOperationException($"Away team with ID {createMatchDto.AwayTeamId} does not exist.");
+            }
+
             var match = new Match
             {
                 HomeTeamId = createMatchDto.HomeTeamId,
@@ -81,13 +94,17 @@ namespace TeamRanking.Services
                 IsOver = match.IsOver
             };
         }
-
         public async Task<MatchDto> UpdateMatchAsync(int id, UpdateMatchDto updateMatchDto)
         {
             var match = await _context.Matches.FindAsync(id);
             if (match == null)
             {
                 return null;
+            }
+
+            if (match.IsOver)
+            {
+                throw new InvalidOperationException("The match is over and cannot be updated.");
             }
 
             match.HomeTeamScore = updateMatchDto.HomeTeamScore;

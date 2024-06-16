@@ -29,7 +29,7 @@ namespace TeamRanking.Controllers
             var match = await _matchService.GetMatchByIdAsync(id);
             if (match == null)
             {
-                return Ok(new { Message = "Match updated successfully", Data = match });
+                return NotFound(new { Message = "Match not found", MatchId = id });
             }
             return Ok(match);
         }
@@ -47,7 +47,7 @@ namespace TeamRanking.Controllers
             var match = await _matchService.UpdateMatchAsync(id, updateMatchDto);
             if (match == null)
             {
-                return Ok(new { Message = "Match updated successfully", Data = match });
+                return NotFound(new { Message = "Match not found", MatchId = id });
             }
             return Ok(new{ Message ="Match updated successfully", Data = match });
         }
@@ -58,7 +58,7 @@ namespace TeamRanking.Controllers
             var match = await _matchService.GetMatchByIdAsync(id);
             if (match == null)
             {
-                return Ok(new { Message = "Match updated successfully", Data = match });
+                return NotFound(new { Message = "Match not found", MatchId = id });
             }
             await _matchService.DeleteMatchAsync(id);
             return Ok(new { Message = "Match deleted successfully", MatchId = id });
