@@ -1,0 +1,6 @@
+@TeamRanking_HostAddress = http://localhost:5195
+
+GET {{TeamRanking_HostAddress}}/TeamRanking/
+Accept: application/json
+
+###
