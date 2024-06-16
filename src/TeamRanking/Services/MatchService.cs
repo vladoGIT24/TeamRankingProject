@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TeamRanking.Persistence;
 using TeamRanking.Persistence.Entity;
 using TeamRanking.Services.Interfaces;
-using TeamRanking.Services.Models;
+using TeamRanking.Models;
 
 namespace TeamRanking.Services
 {

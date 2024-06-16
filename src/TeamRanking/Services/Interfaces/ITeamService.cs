@@ -1,5 +1,5 @@
 ﻿using TeamRanking.Persistence.Entity;
-using TeamRanking.Services.Models;
+using TeamRanking.Models;
 
 namespace TeamRanking.Services.Interfaces
 {

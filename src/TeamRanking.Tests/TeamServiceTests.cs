@@ -4,13 +4,15 @@
     {
         private readonly DatabaseFixture _fixture;
         private readonly Mock<IRankingService> _rankingServiceMock;
+        private readonly Mock<IFileReaderService> _fileReaderServiceMock;
         private readonly TeamService _teamService;
 
         public TeamServiceTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
             _rankingServiceMock = new Mock<IRankingService>();
-            _teamService = new TeamService(_fixture.DbContext, _rankingServiceMock.Object);
+            _fileReaderServiceMock = new Mock<IFileReaderService>();
+            _teamService = new TeamService(_fixture.DbContext, _rankingServiceMock.Object, _fileReaderServiceMock.Object);
         }
 
         private async Task CleanUp()
@@ -195,21 +197,27 @@
         {
             // Arrange
             await CleanUp();
-            var filePath = "test_teams.json";
-            var jsonData = "[{\"Name\": \"Team A\"}, {\"Name\": \"Team B\"}]";
-            await File.WriteAllTextAsync(filePath, jsonData);
+            var createUpdateTeamDtos = new List<CreateUpdateTeamDto>
+            {
+                new CreateUpdateTeamDto { Name = "Team A" },
+                new CreateUpdateTeamDto { Name = "Team B" }
+            };
+
+            _fileReaderServiceMock.Setup(x => x.ReadTeamsFromFileAsync(It.IsAny<string>()))
+                                  .ReturnsAsync(createUpdateTeamDtos);
 
             // Act
-            await _teamService.BulkCreateTeamsFromFileAsync(filePath);
-            var teams = await _fixture.DbContext.Teams.ToListAsync();
+            await _teamService.BulkCreateTeamsFromFileAsync("dummyFilePath.json");
 
             // Assert
+            var teams = await _fixture.DbContext.Teams.ToListAsync();
             Assert.Equal(2, teams.Count);
             Assert.Contains(teams, t => t.TeamName == "Team A");
             Assert.Contains(teams, t => t.TeamName == "Team B");
 
+            _rankingServiceMock.Verify(r => r.InitializeRankingForTeamAsync(It.IsAny<int>()), Times.Exactly(2));
+
             // Clean up
-            File.Delete(filePath);
             await CleanUp();
         }
     }

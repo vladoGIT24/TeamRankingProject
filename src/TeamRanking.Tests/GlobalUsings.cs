@@ -5,4 +5,4 @@ global using TeamRanking.Persistence;
 global using TeamRanking.Persistence.Entity;
 global using TeamRanking.Services;
 global using TeamRanking.Services.Interfaces;
-global using TeamRanking.Services.Models;
+global using TeamRanking.Models;

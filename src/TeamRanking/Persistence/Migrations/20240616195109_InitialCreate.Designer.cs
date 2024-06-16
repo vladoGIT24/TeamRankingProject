@@ -11,7 +11,7 @@ using TeamRanking.Persistence;
 namespace TeamRanking.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240615203237_InitialCreate")]
+    [Migration("20240616195109_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -1,4 +1,4 @@
-﻿namespace TeamRanking.Persistence.Entity
+﻿namespace TeamRanking.Models
 {
     public enum Scoring
     {

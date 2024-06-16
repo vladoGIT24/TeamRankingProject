@@ -1,4 +1,4 @@
-﻿namespace TeamRanking.Services.Models
+﻿namespace TeamRanking.Models
 {
     public class MatchDto
     {

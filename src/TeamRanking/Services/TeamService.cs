@@ -3,7 +3,7 @@ using System.Text.Json;
 using TeamRanking.Persistence;
 using TeamRanking.Persistence.Entity;
 using TeamRanking.Services.Interfaces;
-using TeamRanking.Services.Models;
+using TeamRanking.Models;
 
 namespace TeamRanking.Services
 {
@@ -11,11 +11,13 @@ namespace TeamRanking.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IRankingService _rankingService;
+        private readonly IFileReaderService _fileReaderService;
 
-        public TeamService(ApplicationDbContext context, IRankingService rankingService)
+        public TeamService(ApplicationDbContext context, IRankingService rankingService, IFileReaderService fileReaderService)
         {
             _context = context;
             _rankingService = rankingService;   
+            _fileReaderService = fileReaderService;
         }
 
         public async Task<IEnumerable<TeamDto>> GetAllTeamsAsync()
@@ -110,18 +112,7 @@ namespace TeamRanking.Services
 
         public async Task BulkCreateTeamsFromFileAsync(string filePath)
         {
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException("The JSON file was not found.", filePath);
-            }
-
-            var jsonData = await File.ReadAllTextAsync(filePath);
-            var createUpdateTeamDtos = JsonSerializer.Deserialize<List<CreateUpdateTeamDto>>(jsonData);
-
-            if (createUpdateTeamDtos == null || createUpdateTeamDtos.Count == 0)
-            {
-                throw new InvalidDataException("Invalid team data.");
-            }
+            var createUpdateTeamDtos = await _fileReaderService.ReadTeamsFromFileAsync(filePath);
 
             var existingTeams = await _context.Teams
                                               .Where(t => createUpdateTeamDtos.Select(dto => dto.Name).Contains(t.TeamName))

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TeamRanking.Persistence.Entity;
 using TeamRanking.Services.Interfaces;
-using TeamRanking.Services.Models;
+using TeamRanking.Models;
 
 namespace TeamRanking.Controllers
 {

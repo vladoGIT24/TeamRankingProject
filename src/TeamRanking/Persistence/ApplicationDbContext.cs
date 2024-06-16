@@ -14,6 +14,15 @@ namespace TeamRanking.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Match>()
+                .HasKey(m => m.MatchId);
+
+            modelBuilder.Entity<Ranking>()
+                .HasKey(r => r.RankingId);
+
+            modelBuilder.Entity<Team>()
+                .HasKey(t => t.TeamId);
+
+            modelBuilder.Entity<Match>()
                 .HasOne(m => m.HomeTeam)
                 .WithMany(t => t.HomeMatches)
                 .HasForeignKey(m => m.HomeTeamId)
